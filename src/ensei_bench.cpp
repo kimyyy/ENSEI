@@ -140,7 +140,7 @@ void ensei_bench(uint64_t poly_modulus_degree){
         validate_mult[i] = input[i] * kernel[i];
     }
     auto conved = ensei_mult(input, kernel ,plain_modulus, poly_modulus_degree);
-    print_vector(conved, 10);
+    //print_vector(conved, 10);
     ntt_seal(conved, tables, true, pool);
     print_vector(conved, 4);
     cout << endl;
