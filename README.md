@@ -29,7 +29,7 @@ for running a direct convolution with polynomial degree 2048
 ./ensei_bench.sh
 ```
 to benchmark a set of pre-defined computations, where the benchmarked results
-will be in the folder hlt_result/
+will be in the folder ensei_result/
 
 ## CMake Options
 
