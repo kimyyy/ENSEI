@@ -40,3 +40,7 @@ will be in the folder ensei_result/
 ## Directory Layout
 - Benchmarks
   - src: Benchmarks
+
+## Citation
+「ENSEI: Efficient Secure Inferrence via Frequency-Domain Homomorphic Convolution for Privary-Preserving Visual Recognition」in Proceedings of Conference on Computer Vision and Pattern Recognition(CVPR 2020)
+
