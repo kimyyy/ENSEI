@@ -20,17 +20,9 @@
 #include <vector>
 #include <chrono>
 
-extern "C" {
-#include "nttw/array.h"
-#include "nttw/timing.h"
-#include "nttw/number.h"
-}
-
 using namespace std;
 using namespace seal;
 using namespace seal::util;
-//#define PROOT 3
-//#define MODULUS 40961
 
 inline vector<Modulus> select_modchain(uint64_t poly_degree){
     vector<Modulus> mod_chain;
@@ -58,15 +50,6 @@ void print_vector(vector<uint64_t>& v, uint64_t num){
     cout << endl;
 }
 
-vector<uint64_t> pre_ntt(nttw_integer* input, uint64_t ntt_len){
-    fntt(input, ntt_len, PROOT, NTTW_FORWARD);
-    uint64_t array_size = ntt_len * 2;
-    vector<uint64_t> ntted(array_size);
-    for(uint64_t i = 0;i < array_size;i++){
-        ntted[i] = input[i];
-    }
-    return ntted;
-}
 
 inline auto ntt_seal(vector<uint64_t> &input, NTTTables &tables, bool is_inverse, MemoryPoolHandle &pool){
     auto poly_size = input.size();
@@ -79,20 +62,6 @@ inline auto ntt_seal(vector<uint64_t> &input, NTTTables &tables, bool is_inverse
     }
     set_poly(poly.get(), input.size(), 1, input.data());
     return input;
-}
-
-void post_intt(vector<uint64_t>& ntted, nttw_integer* intted, uint64_t ntt_len){
-    uint64_t array_size = ntt_len * 2;
-    for(uint64_t i = 0;i < array_size;i++){
-        if(ntted[i] >= 0xffff){
-            cout << "detect max!" << endl;
-        }
-        uint64_t ntted_mod = ntted[i] % MODULUS;
-        intted[i] = static_cast<nttw_integer>(ntted_mod);
-        //cout << "intted: " << intted[i] << endl;
-    }
-    fntt(intted, ntt_len, PROOT, NTTW_INVERSE);
-    ntt_norm(intted, ntt_len);
 }
 
 vector<uint64_t> ensei_mult(vector<uint64_t>& input, vector<uint64_t>& kernel,Modulus &plain_modulus, uint64_t poly_modulus_degree)
@@ -177,81 +146,6 @@ void ensei_bench(uint64_t poly_modulus_degree){
     cout << endl;
 }
 
-void test_fntt(){
-    uint64_t ntt_len = 2;
-    uint64_t array_size = ntt_len*2;
-    vector<nttw_integer> input_value = {1, 2, 3, 4};
-
-    nttw_integer *input = array_1D(array_size);
-    for(uint64_t i = 0;i < input_value.size();i++){
-        input[i] = input_value[i];
-    }
-    auto input_ntt = pre_ntt(input, ntt_len);
-    nttw_integer* input_re = array_1D(array_size);
-    for(uint64_t i = 0;i < array_size;i++){
-        //cout << "input, input_ntt " << input[i] << ", " << input_ntt[i] << endl;
-        input_re[i] = input[i];
-    }
-
-    nttw_integer* inversed = array_1D(array_size);
-    post_intt(input_ntt, inversed, ntt_len);
-    for(uint64_t i = 0;i < array_size;i++){
-        cout << inversed[i] << " ";
-    }
-    cout << endl;
-
-    fntt(input_re, ntt_len, PROOT, NTTW_INVERSE);
-    ntt_norm(input_re, ntt_len);
-    for(uint64_t i = 0;i < array_size;i++){
-        cout << input_re[i] << " ";
-    }
-    cout << endl;
-    fntt(input, ntt_len, PROOT, NTTW_INVERSE);
-    ntt_norm(input, ntt_len);
-    for(uint64_t i = 0;i < array_size;i++){
-        cout << input[i] << " ";
-    }
-    cout << endl;
-    free_array(input);
-    free_array(input_re);
-    free_array(inversed);
-}
-
-void test_fntt_mult(){
-    uint64_t ntt_len = 4;
-    uint64_t array_size = ntt_len*2;
-    vector<nttw_integer> input_value = {1, 2, 3, 4};
-    vector<nttw_integer> input_2_value = {2, 1};
-
-    nttw_integer *input = array_1D(array_size);
-    nttw_integer *input_2 = array_1D(array_size);
-    for(uint64_t i = 0;i < input_value.size();i++){
-        input[i] = input_value[i];
-    }
-    for(uint64_t i = 0;i < input_2_value.size();i++){
-        input_2[i] = input_2_value[i];
-    }
-    auto input_ntt = pre_ntt(input, ntt_len);
-    auto input_ntt_2 = pre_ntt(input_2, ntt_len);
-
-    vector<uint64_t> multed(array_size);
-    for(uint64_t i = 0;i < array_size;i++){
-        uint64_t tmp = input_ntt[i];
-        tmp = tmp * input_ntt_2[i];
-        multed[i] = tmp %MODULUS;
-    }
-
-    nttw_integer* inversed = array_1D(array_size);
-    post_intt(multed, inversed, ntt_len);
-    for(uint64_t i = 0;i < array_size;i++){
-        cout << inversed[i] << " ";
-    }
-    cout << endl;
-
-    free_array(input);
-    free_array(input_2);
-    free_array(inversed);
-}
 
 void test_seal_ntt(){
     MemoryPoolHandle pool = MemoryPoolHandle::Global();
@@ -271,7 +165,7 @@ void test_seal_ntt(){
 
 int main(int argc, char **argv){
     if(argc !=2){
-        cout << "Usage: ./exe poly_degree" << endl;
+        cout << "Usage: ./ensei_bench poly_degree" << endl;
         exit(1);
     }
     uint64_t poly_degree = (uint64_t)atol(argv[1]);
