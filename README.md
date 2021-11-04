@@ -42,8 +42,7 @@ will be in the folder ensei_result/
   - src: Benchmarks
 
 ## Publication
-The academic background and detailed explanation can be found [here](https://arxiv.org/abs/2003.05328).
-「ENSEI: Efficient Secure Inferrence via Frequency-Domain Homomorphic Convolution for Privary-Preserving Visual Recognition」in Proceedings of Conference on Computer Vision and Pattern Recognition(CVPR 2020)
+The academic background and detailed explanation can be found [here](https://arxiv.org/abs/2003.05328). Cite this work as follows.
 
 ```bibtex
 @InProceedings{Bian_2020_CVPR,
