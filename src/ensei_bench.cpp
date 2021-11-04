@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license.
-
 #include "seal/seal.h"
 #include "seal/util/ntt.h"
 #include <algorithm>
@@ -104,9 +101,7 @@ vector<uint64_t> ensei_mult(vector<uint64_t>& input, vector<uint64_t>& kernel,Mo
     Ciphertext input_enc;
     encryptor.encrypt(input_plain, input_enc);
 
-    cout << "    + size of freshly encrypted x: " << input_enc.size() << endl;
-
-    cout << "    + noise budget in freshly encrypted x: " << decryptor.invariant_noise_budget(input_enc) << " bits"
+    cout << "    + noise budget in encrypted input: " << decryptor.invariant_noise_budget(input_enc) << " bits"
          << endl;
 
     // server 
@@ -114,7 +109,7 @@ vector<uint64_t> ensei_mult(vector<uint64_t>& input, vector<uint64_t>& kernel,Mo
     evaluator.multiply_plain_inplace(input_enc, kernel_plain);
     auto mult_post = chrono::high_resolution_clock::now();
     auto mult_time = chrono::duration_cast<chrono::microseconds>(mult_post - mult_pre);
-    cout << "mult: " << mult_time.count() << "us" << endl;
+    cout << "mult latency: " << mult_time.count() << "us" << endl;
     
     // client
     Plaintext input_dec;
