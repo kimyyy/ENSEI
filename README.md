@@ -42,7 +42,7 @@ will be in the folder ensei_result/
   - src: Benchmarks
 
 ## Publication
-The academic background and detailed explanation can be found [here](https://arxiv.org/abs/2003.05328). Cite this work as follows.
+The academic background and detailed explanation can be found [here](https://arxiv.org/abs/2003.05328). Feel free to cite this work as follows.
 
 ```bibtex
 @InProceedings{Bian_2020_CVPR,
